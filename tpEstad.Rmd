@@ -1,7 +1,7 @@
 ---
 title: "TP Estadística"
 author: "Pochat & Demitropoulous"
-date: "11/25/2021"
+date: "Segundo Cuatrimestre 2021"
 output:
   pdf_document:
     toc: true
@@ -27,16 +27,114 @@ El objetivo del trabajo es predecir el gasto que realiza la producción de "100 
 
 # Análisis
 
-TODO Analisis
+## Puntajes
 
-Con plots facheritos
+Lo primero que es necesario hacer es mediante un muestreo de 3 meses de "100 Argentinos Dicen" tratamos de calcular los puntajes de las respuestas más populares. Por TCL, asumimos que pertenecen a una distribución normal.
+
+Realizamos el mismo procedimiento con las segundas más populares y vemos también su media y desvío para calcular las distribuciones.
+
+Se puede ver en el gráfico las distintas distribuciones:
+
+\begin{align*}
+Puntaje\;más\;popular \sim {\sf N}(32.26,4) \\
+Puntaje\;segunda\;más\;popular \sim {\sf N}(22.6,2.96) \\
+\end{align*}
 
 ```{r pressure, echo=FALSE}
-plot(pressure)
+library(ggplot2)
+MP <- c(29,31,27,31,27,27,27,40,28,33,32,31,36,28,38,31,35,34,38,32,31,42,36,36,29,27,34,29,28,36,25,28,27,34,
+          29,27,33,27,30,30,32,31,33,39,31,31,31,32,37,36,42,29,31,27,31,34,34,27,26,33,31,31,34,29,38,36,30,28,36,
+          36,25,27,34,37,30,29,31,32,33,35,37,37,27,27,38,30,37,26,26,37,26,36,36,36,30,35,37,33,39,33,37,33,33,34,29,34,33,34,34,
+          37,36,27,32,28,32,31,36,31,33,33,32,30,36,28,31,27,36,37,36,32,28,29,26,31,37,
+          29,32,36,37,38,39,40,29,37,29,32,36,37,38,39,40,32,23,29,34,33,32,33,34,36,33,37,36,36,35,27,35,
+          31,29,30,29,36,36,34,28,38,34,27,28,34,25,40,26,35,34,26,33,43,29,23,30,31,28,34,35,33,33,37,29,37,
+          31,26,27,32,36,30,28,30,31,26,33,26,31,32,39,32,32,37,38,41,29,33,32,32,34,24,33,32,34,27,29,28,27,29,31,
+          30,38,37,28,32,33,27,29,29,31,36,33,34,36,27,36,37,33,37,34,28,34,27,27,36,32,30,32,31,36)
+
+SMP <- c(25,24,20,20,21,26,25,26,22,21,24,20,20,19,23,25,21,20,26,27,19,24,22,20,18,22,20,22,23,
+         22,26,23,20,24,22,24,24,23,19,21,24,31,17,26,18,22,21,20,25,19,25,26,18,22,25,20,23,25,20,26,21,26,24,22,21,19,22,24,22,21,24,24,25,23,
+         18,22,21,22,25,24,23,20,17,19,27,15,25,25,22,27,26,19,18,25,24,19,23,22,25,25,22,23,21,23,18,22,17,35,21,24,22,23,25,26,24,19,24,26,20,19,23,23,22,24,26,26,25,27)
+muMP <- mean(MP)
+sdMP <- sd(MP)
+muSMP <- mean(SMP)
+sdSMP <- sd(SMP)
+
+p9 <- ggplot(data.frame(x = c(15, 45)), aes(x = x)) +
+  stat_function(fun = dnorm, args = list(muMP, sdMP)) +
+  stat_function(fun = dnorm, args = list(muSMP, sdSMP)) +
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+p9 + xlab("Puntaje")
+
+ 
+nPopulares <- c(5,5,2,5,3,3,2,4,5,4,4,4,2,4,1,2,3,4,4,0,2,2,1,3,1,3,3,5,4,3,4,3,3,4,2,5,4,4,3,4,3,4,1,3,4,4,5,4,3,4,4,3,2,4,
+                3,4,3,3,4,4,3,4,3,4,4,3,1,1,3,2,3,5,2,3,5,3,2,2,2,1,1,4)
+
+pPop <- mean(nPopulares)/5
+
+nSMP <- c(1,0,0,2,1,3,2,1,4,3,0,1,4,2,1,1,0,2,1,3,1,0,0,1,1,1,2,1,1,1,1,2,1,2,2,1,0,2,2,0,1,2,1,2,3,1,2,1,1,1,3,1,3,2,0,4,1,0,1,3,1,1,2,3,1,2,1,1,1,1,0,2,2,3,1,1,2,0,2,3,2,1)
+pSP <- mean(nSMP)/5
+
+nMalas <- c(3,2,4,1,4,2,3,4,0,0,4,1,2,2,7,4,5,1,4,3,5,4,3,4,5,1,2,2,1,2,3,2,3,4,4,2,3,5,2,5,3,2,5,2,2,2,3,5,3,4,1,2,4,0,4,1,3,5,2,2,3,3,5,2,0,3,5,6,2,2,4,2,3,1,2,4,3,4,3,1,4,2)
+pMalas <- mean(nMalas)/10
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Número de respuestas
 
-# Predictor
+Luego, se busca la cantidad de participantes que aciertan la respuesta más popular por Dinero Rápido. Se puede fácilmente saber que es una distribución discreta binomial, con párametro desconocido que se calcula con el método de máxima verosimilitud en base a las muestras. Realizamos lo mismo con las segundas más populares.
 
-TODO PREDICTOR
+\begin{align*}
+Número\;de\;respuestas\;más\;popular \sim {\sf Binom}(0.63,5) \\
+Número\;de\;respuestas\;segunda\;más\;popular \sim {\sf Binom}(0.29,5) \\
+\end{align*}
+
+Finalmente, necesitamos realizar el mismo prodecimiento, con aquellas respuestas catalogadas como malas. Son aquellas que arbitrariamente elegimos como de 0 a 7.
+
+\begin{align*}
+Número\;de\;respuestas\;malas \sim {\sf Binom}(0.289,10) \\
+\end{align*}
+
+# Simulación
+
+Mediante estos datos analizados, realizamos una simulación para buscar el porcentaje de veces ganadas en n intentos. En nuestro elegimos un n grande para mayor exactitud. Repetimos varias veces el programa y oscilaba en el mismo rango.
+
+```{echo = true}
+simulacion <- function(reps){
+  counter = 0
+  for (i in 1:reps) {
+    puntos = 0
+    
+    nDePops = rbinom(1,5,pPop)
+    for(j in 1:nDePops){
+      puntos = puntos + floor(rnorm(1,muMP,sdMP))
+    }
+    
+    nDeSPops = rbinom(1,5,pSP)
+    for(j in 1:nDeSPops){
+      puntos = puntos + floor(rnorm(1,muSMP,sdSMP))
+    }
+    
+    nDeMalas = rbinom(1,10,pMalas)
+    if(nDePops + nDeSPops + nDeMalas > 10){
+      nDeMalas = 10 - nDePops - nDeSPops
+    }
+    for(j in 1:nDeMalas){
+      puntos = puntos + runif(1,0,7)
+    }
+    #print(puntos)
+    for(j in 1:(10 - nDePops - nDeSPops -  nDeMalas)){
+      puntos = puntos + runif(1,8,14)
+    }
+    if(puntos >= 200){
+      counter = counter + 1
+    }
+  }
+  counter
+}
+n <- simulacion(10000)
+res <- n/10000*48*50000
+```
+
+El dinero que necesita gastar el programa en ganadores de Dinero Rápido por mes es de $712536
